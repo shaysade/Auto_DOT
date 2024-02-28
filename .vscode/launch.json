@@ -1,0 +1,14 @@
+{
+"configurations": [
+    {
+        "name": "stramlit_debug",
+        "type": "debugpy",
+        "request": "launch",
+        "module": "streamlit",
+        "args": [
+            "run",
+            "Demo_Run.py"
+        ],
+    }
+ ]
+}

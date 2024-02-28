@@ -1,4 +1,2 @@
-
-def about_page():
-    st.title("About Page")
-    st.write("Here's some information about this app.")
+import streamlit as st
+import pandas as pd
