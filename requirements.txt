@@ -1,0 +1,10 @@
+pytest-playwright
+playwright
+pandas
+matplotlib
+st-supabase-connection
+requests
+openai
+beautifulsoup4
+streamlit-supabase-auth
+streamlit_antd_components
