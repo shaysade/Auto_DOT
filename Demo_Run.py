@@ -5,6 +5,7 @@ from playwright.sync_api import sync_playwright
 from concurrent.futures import ThreadPoolExecutor
 import subprocess
 import json
+import sys
 
 
 def quiality_dashboad():
@@ -55,70 +56,15 @@ def quiality_dashboad():
         for feature, kpi in main_app_kpis.items():
             st.text(f"{feature}: {kpi}")
 
-
-
-# def run_playwright_sync():
-#     result = ""
-#     try:
-#         with sync_playwright() as p:
-#             browser = p.chromium.launch(headless=False)  # Adjust headless as needed
-#             page = browser.new_page()
-#             page.goto('https://www.ebay.com')
-#             page.fill('input[id="gh-ac"]', 'vintage watch')
-#             page.click('input[id="gh-btn"]')
-#             page.wait_for_navigation()
-#             # Verify the results...
-#             if 'vintage watch' in page.title().lower():
-#                 result = "Test Passed: The results page displays listings related to 'vintage watch'."
-#             else:
-#                 result = "Test Failed: The page title does not contain 'vintage watch'."
-#             browser.close()
-#     except Exception as e:
-#         result = f"An error occurred: {str(e)}"
-#     return result
-
-# def test_ebay_search_for_vintage_watch():
-#     # Run Playwright in a separate thread
-#     with ThreadPoolExecutor() as executor:
-#         future = executor.submit(run_playwright_sync)
-#         result = future.result()  # Wait for completion
-#         st.write(result)
-
-
-# def test_ebay_search_for_vintage_watch():
-#     with sync_playwright() as p:
-#         # Launch the browser
-#         browser = p.chromium.launch(headless=False)  # Set headless=False to see the browser
-#         page = browser.new_page()
-
-#         # Step 1: Navigate to eBay homepage
-#         page.goto('https://www.ebay.com')
-
-#         # Step 2: Enter 'vintage watch' in the search bar
-#         page.fill('input[id="gh-ac"]', 'vintage watch')
-
-#         # Step 3: Press the search button
-#         page.click('input[id="gh-btn"]')
-#         page.wait_for_navigation()
-
-#         # Expected Result: The results page displays listings related to 'vintage watch'.
-#         assert 'vintage watch' in page.title().lower(), "The page title does not contain 'vintage watch'"
-
-#         # Optionally, check if listings are indeed displayed
-#         # This example assumes there's a class for listing items, you'll need to replace '.listing-item' with the correct selector
-#         listings_count = page.locator('.s-item').count()
-#         assert listings_count > 0, "No listings found for 'vintage watch'."
-
-#         # Close the browser
-#         browser.close()                    
-                            
-
+  
 def tests_suite():
     st.title("Tests Suite")
     # To ensure uniqueness, you can use a key for the file uploader. But since you need it only once, it's not necessary here.
     st.file_uploader("Upload your PRD", key="unique_prd_uploader")
     st.text_input("Enter your site URL", key="unique_site_url_input")
-    
+    if (st.button("Record")):
+        call_user_recording_script(st.session_state['unique_site_url_input'])
+
     if st.button("Generate Tests", key="generate_tests_button"):
         st.session_state['generate_tests'] = True
 
@@ -168,6 +114,19 @@ def tests_suite():
 # if __name__ == "__main__":
 #     tests_suite()
 
+def call_user_recording_script(start_url):
+    try:
+        # Correctly separated command arguments
+        result = subprocess.run(["python", "user_recording_script.py", start_url], capture_output=True, text=True, check=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.stderr:
+            print("Error: " + result.stderr)
+    except subprocess.CalledProcessError as e:
+        print(f"Subprocess error: {e}")
+    except Exception as e:
+        print(f"An error occurred: {str(e)}")
+        
 def call_demo_script():
     try:
         # Ensure the correct path to the script if it's not in the same directory
