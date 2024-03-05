@@ -5,14 +5,7 @@ import streamlit as st
 import openai
 from classes import TestCase
 from datetime import datetime
-test_cases_prompts = """ You are an test automation engineer co-pilot. You need to generate test cases from a PRD document and a site html.
-                        The site name is: {url_name} 
-                        the site html is: {html_content}
-                        The PRD text is: {prd_text}
-                        
-                        
-                        Generate 10 test cases. For each test case provide a title, a description, a precondition, a list of steps and an expected result
-                        return a json in the right format. The steps are just a list of strings"""
+import prompts
 
 @st.cache_resource
 def get_llm(together = False):
@@ -38,7 +31,6 @@ def get_mixtral_completion(prompt):
 
 def get_gpt4_completion(prompt):
     return get_llm().chat.completions.create(
-        #model="mistralai/Mixtral-8x7B-Instruct-v0.1",
         model="gpt-4-0125-preview",
         messages=[
             {"role": "user", "content": prompt},
@@ -46,14 +38,28 @@ def get_gpt4_completion(prompt):
         temperature=0.7,
         max_tokens=3000,
         response_format={ "type": "json_object" },
-    )
+    ).choices[0].message.content
+
+def get_gpt3_completion(prompt):
+    return get_llm().chat.completions.create(
+        model="gpt-3.5-turbo-0125",
+        messages=[
+            {"role": "user", "content": prompt},
+        ],
+        temperature=0.7,
+        max_tokens=3000,
+        response_format={ "type": "json_object" },
+    ).choices[0].message.content
 
 
-def generate_test_cases(url, prd):
+def generate_test_cases(url, prd, playwright_code):
     #html = requests.get(url = url).text
-    prompt = test_cases_prompts.format(url_name = url, html_content = None, prd_text = prd)
+    if len(playwright_code) > 0:
+        prompt = prompts.test_cases_from_pw_script.format(playwright_code = playwright_code)
+    else:
+        prompt = prompts.test_cases_prompts.format(url_name = url, html_content = None, prd_text = prd)
     print(datetime.now())
-    generated_test_cases = get_mixtral_completion(prompt)
+    generated_test_cases = get_gpt3_completion(prompt)
     print(datetime.now())
     test_cases_dict = json.loads(generated_test_cases)
     test_cases = [TestCase(id = None,**test_case) for test_case in test_cases_dict["test_cases"]]
