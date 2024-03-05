@@ -6,6 +6,19 @@ import DAL
 
 st.set_page_config(layout="wide")
 
+def call_user_recording_script(start_url):
+    try:
+        # Correctly separated command arguments
+        result = subprocess.run(["python", "user_recording_script.py", start_url], capture_output=True, text=True, check=True)
+        if result.stdout:
+            print(result.stdout)
+        if result.stderr:
+            print("Error: " + result.stderr)
+    except subprocess.CalledProcessError as e:
+        print(f"Subprocess error: {e}")
+    except Exception as e:
+        print(f"An error occurred: {str(e)}")
+
 def generate_test_cases(suite_name, suite_desc):
     test_cases = server.generate_test_cases(st.session_state.unique_site_url_input, st.session_state.unique_prd_uploader.getvalue().decode("utf-8"))
     st.session_state["test_suite"] = {"Name":st.session_state.suite_name, "Description": st.session_state.description}
@@ -24,18 +37,17 @@ if "new_cases" in  st.session_state:
             case.persist()
 else:
     with st.form(clear_on_submit=True, key = "new_suite_form"):
+        st.title("New Test Suite")
         column1,column2 = st.columns([1,2])
-        #st.title("New Test Suite")
         suite_name = column1.text_input("Suite Name", key="suite_name")
         suite_desc = column2.text_input("Description", key="description")
         column1.file_uploader("Upload your PRD", key="unique_prd_uploader")
         column2.text_input("Enter your site URL", key="unique_site_url_input")
         st.form_submit_button("Generate Tests", on_click=generate_test_cases, args=[suite_name,suite_desc])
-            
-            
-            #st.session_state['generate_tests'] = True
-
-
+        #st.form_submit_button("Record", on_click=call_user_recording_script(st.session_state['unique_site_url_input']))
+        if(st.form_submit_button("Record")):
+            call_user_recording_script(st.session_state['unique_site_url_input'])
+                
 
 def call_demo_script():
     try:
