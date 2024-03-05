@@ -43,18 +43,37 @@ if "new_cases" in  st.session_state:
             case.suite_id = suite_id
             case.persist()
 else:
-    with st.form(clear_on_submit=True, key = "new_suite_form"):
-        st.title("New Test Suite")
-        column1,column2 = st.columns([1,2])
-        suite_name = column1.text_input("Suite Name", key="suite_name")
-        suite_desc = column2.text_input("Description", key="description")
-        column1.file_uploader("Upload your PRD", key="unique_prd_uploader")
-        column2.text_input("Enter your site URL", key="unique_site_url_input")
-        st.form_submit_button("Generate Tests", on_click=generate_test_cases, args=[suite_name,suite_desc])
-        #st.form_submit_button("Record", on_click=call_user_recording_script(st.session_state['unique_site_url_input']))
-        if(st.form_submit_button("Record")):
-            call_user_recording_script(st.session_state['unique_site_url_input'])
-                
+    st.title("New Test Suite")
+
+    column1, column2 = st.columns(2)
+
+    with column1:
+        suite_name = st.text_input("Suite Name", key="suite_name")
+        prd_uploader = st.file_uploader("Upload your PRD", key="unique_prd_uploader")
+      
+
+    with column2:
+        suite_desc = st.text_input("Description", key="description")
+        site_url_input = st.text_input("Enter your site URL", key="unique_site_url_input")
+          # Add a spacer to push the button down so it aligns with the button in column2
+        st.write("")
+        st.write("") 
+        st.write("") 
+       
+
+    # Placing the buttons after the columns to attempt alignment
+    generate_tests_button = column1.button("Generate Tests", key="generate_tests_button")
+    record_button = column2.button("Record", key="record_button")
+
+    if generate_tests_button:
+        # Assuming generate_test_cases is a function you've defined elsewhere
+        generate_test_cases(suite_name, suite_desc)
+
+    if record_button:
+        # Assuming call_user_recording_script is a function you've defined elsewhere
+        call_user_recording_script(site_url_input)
+
+
 
 def call_demo_script():
     try:
