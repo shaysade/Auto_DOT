@@ -21,10 +21,11 @@ def call_user_recording_script(start_url):
     except Exception as e:
         print(f"An error occurred: {str(e)}")
 
-def generate_test_cases(suite_name, suite_desc):
+def generate_test_cases():
     with open('recorded_script.py', 'r') as file:
         pw_code = file.read()
-    prd =  st.session_state.unique_prd_uploader.getvalue().decode("utf-8") if st.session_state.unique_prd_uploader is not None else None
+    prd = ""
+    #prd =  st.session_state.unique_prd_uploader.getvalue().decode("utf-8") if st.session_state.unique_prd_uploader is not None else None
     test_cases = server.generate_test_cases(st.session_state.unique_site_url_input, 
                                             prd,
                                             pw_code)
@@ -35,6 +36,10 @@ def generate_test_cases(suite_name, suite_desc):
 # Initialize session state variables
 if 'current_step' not in st.session_state:
     st.session_state.current_step = 1
+if 'suite_name' not in st.session_state:
+    st.session_state.suite_name = ""
+if 'description' not in st.session_state:
+    st.session_state.description = ""
 
 def render_step1():
     st.title("New Test Suite")
@@ -52,11 +57,12 @@ def render_step1():
 # Function to render Step 2 for "Upload PRD"
 def render_step2_upload_prd():
     with st.form("upload_prd_form"):
-        uploaded_file = st.file_uploader("Upload your PRD", type=['pdf', 'docx'], key="unique_prd_uploader")
+        uploaded_file = st.file_uploader("Upload your PRD", type=['pdf', 'docx','text','txt'], key="unique_prd_uploader")
         generate_tests_submitted = st.form_submit_button("Generate Tests")
         if generate_tests_submitted and uploaded_file is not None:
             # Call your actual function to handle the uploaded PRD file
             generate_test_cases(uploaded_file)
+          
 
 # Function to render Step 2 for "Create from Recording"
 def render_step2_create_from_recording():
@@ -66,6 +72,18 @@ def render_step2_create_from_recording():
         if record_submitted and site_url_input:
             # Call your actual function to start the recording
             call_user_recording_script(site_url_input)
+            generate_test_cases()
+            if "new_cases" in  st.session_state:
+                st.header(st.session_state.test_suite["Name"])
+                st.text(st.session_state.test_suite["Name"])
+                cases = st.session_state['new_cases']
+                for case in cases:
+                    case.render(st)
+                if st.form_submit_button("Save Suite"):
+                    suite_id = DAL.insert_suite(st.session_state.test_suite["Name"],st.session_state.test_suite["Description"])
+                    for case in cases:
+                        case.suite_id = suite_id
+                        case.persist()
 
 # Decide which step to display
 if st.session_state.current_step == 1:
@@ -134,32 +152,32 @@ elif st.session_state.current_step == 2:
 #     except Exception as e:
 #         st.error(f"An error occurred: {str(e)}")
 
-a = """if 'generate_tests' in st.session_state and st.session_state['generate_tests']:
-    test_cases = [
-        TestCase("TC1", "Search Functionality Verification", "Verify that the search functionality returns relevant results based on the entered keyword.",
-                    ["Navigate to eBay homepage", "Enter 'vintage watch' in the search bar", "Press the search button"],
-                    "The results page displays listings related to 'vintage watch'."),
-        TestCase("TC2", "Filter Application in Search Results", "Check if applying filters refines the search results accurately.",
-                    ["Perform a search for 'laptops'", "Apply a 'Brand' filter for 'Apple'", "Apply a price range filter", "Hit apply"],
-                    "Results show only Apple laptops within the specified price range."),
-        # Add other test cases here...
-    ]
+# a = """if 'generate_tests' in st.session_state and st.session_state['generate_tests']:
+#     test_cases = [
+#         TestCase("TC1", "Search Functionality Verification", "Verify that the search functionality returns relevant results based on the entered keyword.",
+#                     ["Navigate to eBay homepage", "Enter 'vintage watch' in the search bar", "Press the search button"],
+#                     "The results page displays listings related to 'vintage watch'."),
+#         TestCase("TC2", "Filter Application in Search Results", "Check if applying filters refines the search results accurately.",
+#                     ["Perform a search for 'laptops'", "Apply a 'Brand' filter for 'Apple'", "Apply a price range filter", "Hit apply"],
+#                     "Results show only Apple laptops within the specified price range."),
+#         # Add other test cases here...
+#     ]
 
-    st.title('eBay Regression Test Cases')
-    for tc in test_cases:
-        with st.expander(f"{tc.id}: {tc.title}"):
-            st.write(f"**Description:** {tc.description}")
-            st.write("**Steps:**")
-            for step in tc.steps:
-                st.write(f"- {step}")
-            st.write(f"**Expected Result:** {tc.expectedResult}")
+#     st.title('eBay Regression Test Cases')
+#     for tc in test_cases:
+#         with st.expander(f"{tc.id}: {tc.title}"):
+#             st.write(f"**Description:** {tc.description}")
+#             st.write("**Steps:**")
+#             for step in tc.steps:
+#                 st.write(f"- {step}")
+#             st.write(f"**Expected Result:** {tc.expectedResult}")
 
-            # Define a unique key for each button using the test case ID
-            button_key = f"button_{tc.id}"
-            if st.button("Automate This TC", key=button_key):
-                call_demo_script()
-                # st.session_state[button_key] = True
-            """
+#             # Define a unique key for each button using the test case ID
+#             button_key = f"button_{tc.id}"
+#             if st.button("Automate This TC", key=button_key):
+#                 call_demo_script()
+#                 # st.session_state[button_key] = True
+#             """
 
 
         
