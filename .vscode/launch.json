@@ -9,7 +9,7 @@
             "run",
             "Test Suite.py"
         ],
-    }
+    },
 
     {
         "name": "playwright_debug",
