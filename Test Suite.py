@@ -3,6 +3,7 @@ import pandas as pd
 import server
 import subprocess         
 import DAL
+import user_recording_script
 
 st.set_page_config(layout="wide")
 
@@ -10,6 +11,7 @@ def call_user_recording_script(start_url):
     try:
         # Correctly separated command arguments
         result = subprocess.run(["python", "user_recording_script.py", start_url], capture_output=True, text=True, check=True)
+        #result = user_recording_script.start_playwright_recording(start_url=start_url)
         if result.stdout:
             print(result.stdout)
         if result.stderr:
@@ -20,7 +22,12 @@ def call_user_recording_script(start_url):
         print(f"An error occurred: {str(e)}")
 
 def generate_test_cases(suite_name, suite_desc):
-    test_cases = server.generate_test_cases(st.session_state.unique_site_url_input, st.session_state.unique_prd_uploader.getvalue().decode("utf-8"))
+    with open('recorded_script.py', 'r') as file:
+        pw_code = file.read()
+    prd =  st.session_state.unique_prd_uploader.getvalue().decode("utf-8") if st.session_state.unique_prd_uploader is not None else None
+    test_cases = server.generate_test_cases(st.session_state.unique_site_url_input, 
+                                            prd,
+                                            pw_code)
     st.session_state["test_suite"] = {"Name":st.session_state.suite_name, "Description": st.session_state.description}
     st.session_state['new_cases'] = test_cases                                         
 

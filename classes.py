@@ -20,7 +20,7 @@ class TestCase:
             DAL.insert_case(self)
 
     def render(self,widget):
-        with widget.expander(f"{self.case_id}: {self.title}"):
+        with widget.expander(self.title):
             columns = st.columns([5,1])
             edit_mode = columns[1].toggle("Edit", value=False, key = f"toggle_edit_{self.case_id}")
             with columns[0]:
