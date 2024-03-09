@@ -20,7 +20,8 @@ class TestCase:
             DAL.insert_case(self)
 
     def render(self,widget):
-        with widget.expander(self.title):
+        expander = widget.expander(self.title)
+        with expander:
             columns = st.columns([5,1])
             edit_mode = columns[1].toggle("Edit", value=False, key = f"toggle_edit_{self.case_id}")
             with columns[0]:
@@ -41,7 +42,7 @@ class TestCase:
                         st.write(f"- {step}")
                     st.write(f"**Expected Result:** {self.expected_outcome}")
                 
-
+        return expander
             # Define a unique key for each button using the test case ID
             #button_key = f"button_{self.id}"
             #if st.button("Automate This TC"):

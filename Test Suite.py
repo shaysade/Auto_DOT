@@ -28,7 +28,7 @@ def generate_test_cases(suite_name, suite_desc):
     test_cases = server.generate_test_cases(st.session_state.unique_site_url_input, 
                                             prd,
                                             pw_code)
-    st.session_state["test_suite"] = {"Name":st.session_state.suite_name, "Description": st.session_state.description}
+    st.session_state["test_suite"] = {"Name":st.session_state.suite_name, "Description": st.session_state.description, "url" : st.session_state.unique_site_url_input}
     st.session_state['new_cases'] = test_cases                                         
 
 if "new_cases" in  st.session_state:
@@ -36,7 +36,9 @@ if "new_cases" in  st.session_state:
     st.text(st.session_state.test_suite["Name"])
     cases = st.session_state['new_cases']
     for case in cases:
-        case.render(st)
+        case_expander = case.render(st)
+        if case_expander.button("Automate"):
+            server.create_code_from_case(case, st.session_state.test_suite["url"], key = f"create_code_button_{case.id}")
     if st.button("Save Suite"):
         suite_id = DAL.insert_suite(st.session_state.test_suite["Name"],st.session_state.test_suite["Description"])
         for case in cases:

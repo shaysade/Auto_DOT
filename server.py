@@ -6,6 +6,7 @@ import openai
 from classes import TestCase
 from datetime import datetime
 import prompts
+from playwright.sync_api import Playwright, sync_playwright, expect
 
 @st.cache_resource
 def get_llm(together = False):
@@ -64,3 +65,11 @@ def generate_test_cases(url, prd, playwright_code):
     test_cases_dict = json.loads(generated_test_cases)
     test_cases = [TestCase(id = None,**test_case) for test_case in test_cases_dict["test_cases"]]
     return test_cases
+
+
+def create_code_from_case(case,url):
+    with sync_playwright() as playwright:
+        browser = playwright.chromium.launch(headless=True)
+        context = browser.new_context()
+        page = context.new_page()
+        page.goto(url)
