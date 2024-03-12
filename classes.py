@@ -26,6 +26,7 @@ class TestCase:
             edit_mode = columns[1].toggle("Edit", value=False, key = f"toggle_edit_{self.case_id}")
             with columns[0]:
                 if edit_mode:
+                    self.title = st.text_input("**Title:**", self.title)
                     self.description = st.text_input("**Description:**", self.description,)
                     self.precondition = st.text_input("**Precondition:**", self.precondition)
                     steps_str = "\n".join(self.steps)
@@ -43,7 +44,41 @@ class TestCase:
                     st.write(f"**Expected Result:** {self.expected_outcome}")
                 
         return expander
-            # Define a unique key for each button using the test case ID
-            #button_key = f"button_{self.id}"
-            #if st.button("Automate This TC"):
-            #    pass
+    
+class TestCode():
+    def __init__(self, code):
+        self.code = code
+
+class TestRun():
+    def __init__(self, run_id, suite_id, run_title, status = None, started_at = None, completed_at =None):
+        self.run_id = run_id if run_id else random.randint(-10000,-1)
+        self.run_title = run_title
+        self.suite_id = int(suite_id)
+        self.status = status
+        self.started_at = started_at
+        self.completed_at = completed_at
+
+    def persist(self):
+        if self.run_id > 0:
+            pass
+        else:
+            self.run_id = None
+            result = DAL.add_run(self)
+            self.run_id = result["run_id"]
+
+
+class CaseRun():
+    def __init__(self, test_result_id ,run_id, case_id, status = None, created_at = None, logs = None):
+        self.test_result_id = test_result_id if test_result_id else random.randint(-10000,-1)
+        self.run_id = int(run_id)
+        self.case_id = int(case_id)
+        self.status = status
+        self.created_at = created_at
+        self.logs = logs
+
+    def persist(self):
+        if self.test_result_id > 0:
+            pass
+        else:
+            self.test_result_id = None
+            DAL.add_case_run(self)

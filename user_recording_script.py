@@ -15,10 +15,14 @@ def start_playwright_recording(start_url):
         
         if process.returncode == 0:
             print("Recording stopped. The script is saved as 'recorded_script.py'.")
+            with open('recorded_script.py', 'r') as file:
+                return file.read()
         else:
             print(f"Recording failed with error: {stderr.decode('utf-8')}")
+            return None
     except Exception as e:
         print(f"An error occurred: {str(e)}")
+        return None
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:

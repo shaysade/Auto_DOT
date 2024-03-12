@@ -1,37 +1,25 @@
 {
-    "configurations": [
-        {
-            "name": "PyTest",
-            "type": "python",
-            "request": "launch",
-            "module": "pytest",
-            "args": [
-                "-vv",
-                "test_add_product_to_cart.py"
-            ],
-            "console": "integratedTerminal",
-            "justMyCode": true
-        }    
-        ,
-        {
-            "name": "auto_debug",
-            "type": "debugpy",
-            "request": "launch",
-            "module": "streamlit",
-            "args": [
-                "run",
-                "Test Suite.py"
-            ],
-        },
-        {
-            "name": "playwright_debug",
-            "type": "debugpy",
-            "request": "launch",
-            "module": "streamlit",
-            "args": [
-                "run",
-                "Demo_Run.py"
-            ],
-        }
-    ]
+"configurations": [
+    {
+        "name": "auto_debug",
+        "type": "debugpy",
+        "request": "launch",
+        "module": "streamlit",
+        "args": [
+            "run",
+            "Test Suite.py"
+        ],
+    },
+
+    {
+        "name": "playwright_debug",
+        "type": "debugpy",
+        "request": "launch",
+        "module": "streamlit",
+        "args": [
+            "run",
+            "Demo_Run.py"
+        ],
+    }
+ ]
 }

@@ -56,12 +56,10 @@ def generate_auto_test_case(testcase_text,playwright_code):
     prompt = prompts.auto_test_from_testcase_text.format(playwright_code = playwright_code,testcase_text = testcase_text )
     generated_code = get_gpt3_completion(prompt)
 
-def generate_test_cases(url, prd, playwright_code):
+def generate_test_cases(url, prd, playwright_code, additional_instructions):
     #html = requests.get(url = url).text
-    if len(playwright_code) > 0:
-        prompt = prompts.test_cases_from_pw_script.format(playwright_code = playwright_code)
-    else:
-        prompt = prompts.test_cases_prompts.format(url_name = url, html_content = None, prd_text = prd)
+    recordings_str = "".join([f"Recording {i+1}: {playwright_code[i]}  \n \n \n" for i in range(0,len(playwright_code))])
+    prompt = prompts.test_cases_prompts.format(prd_text = prd, playwright_recordings = recordings_str, additional_instructions = additional_instructions)
     print(datetime.now())
     generated_test_cases = get_gpt3_completion(prompt)
     print(datetime.now())
