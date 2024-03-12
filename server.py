@@ -52,6 +52,9 @@ def get_gpt3_completion(prompt):
         response_format={ "type": "json_object" },
     ).choices[0].message.content
 
+def generate_auto_test_case(testcase_text,playwright_code):
+    prompt = prompts.auto_test_from_testcase_text.format(playwright_code = playwright_code,testcase_text = testcase_text )
+    generated_code = get_gpt3_completion(prompt)
 
 def generate_test_cases(url, prd, playwright_code):
     #html = requests.get(url = url).text
