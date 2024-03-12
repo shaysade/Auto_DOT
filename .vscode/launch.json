@@ -7,7 +7,7 @@
         "module": "streamlit",
         "args": [
             "run",
-            "Test Suite.py"
+            "Create.py"
         ],
     },
 
