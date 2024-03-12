@@ -18,3 +18,6 @@ report.html
 /__pycache__
 recorded_script.py
 test_add_product_to_cart.py
+test_add_product_to_cart.py
+__pycache__/user_recording_script.cpython-311.pyc
+__pycache__/DAL.cpython-311.pyc
