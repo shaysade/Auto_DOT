@@ -27,6 +27,7 @@ def get_results(run_ids):
                        .in_("run_id",run_ids)
                        .execute().data)
     df["CaseName"] = df.TestCases.str['title']
+    df["Environment"] = "Production" #TODO hard coded need to delete
     return df
 
 def update_case(test_case):

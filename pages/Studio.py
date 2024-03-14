@@ -22,7 +22,7 @@ if suite:
         #tc = TestCase(test_case["case_id"], test_case["title"], test_case["precondition"], test_case["description"], steps, test_case["expected_outcome"])
         test_case.render(container)
 
-    new_run_name = st.text_input("Run name", f"{st.session_state.suite_selector} - {datetime.now().strftime("%d/%m/%Y %H:%M:%S")}")
+    new_run_name = st.text_input("Run name", f"{st.session_state.suite_selector} - {datetime.now()}")
     if st.button("Run Suite"):
         new_run = TestRun(None,suite_id,new_run_name,"Pending")
         new_run.persist()
