@@ -35,56 +35,43 @@ def render_insights():
         # cont = st.expander.container()
         # columns = cont.columns([1,1,1,6])
 error = """
-..\..\..\AppData\Local\Programs\Python\Python311\Lib\importlib\__init__.py:126: in import_module
-    return _bootstrap._gcd_import(name[level:], package, level)
-..\..\..\AppData\Local\Programs\Python\Python311\Lib\site-packages\_pytest\assertion\rewrite.py:178: in exec_module
-    exec(co, module.__dict__)
-test_add_product_to_cart.py:48: in <module>
-    test_add_product_to_basket(playwright)
-test_add_product_to_cart.py:12: in test_add_product_to_basket
-    page.wait_for_load_state('networkidle')
-..\..\..\AppData\Local\Programs\Python\Python311\Lib\site-packages\playwright\sync_api\_generated.py:8736: in wait_for_load_state
-    self._sync(self._impl_obj.wait_for_load_state(state=state, timeout=timeout))
-..\..\..\AppData\Local\Programs\Python\Python311\Lib\site-packages\playwright\_impl\_page.py:516: in wait_for_load_state
-    return await self._main_frame.wait_for_load_state(**locals_to_params(locals()))
-..\..\..\AppData\Local\Programs\Python\Python311\Lib\site-packages\playwright\_impl\_frame.py:243: in wait_for_load_state
     return await self._wait_for_load_state_impl(state, timeout)
-..\..\..\AppData\Local\Programs\Python\Python311\Lib\site-packages\playwright\_impl\_frame.py:271: in _wait_for_load_state_impl
+    AppData\Local\Programs\Python\Python311\Lib\site-packages\playwright\_impl\_frame.py:271
     await waiter.result()
-E   playwright._impl._errors.Error: Target page, context or browser has been closed"""
+    playwright._impl._errors.Error: Target page, context or browser has been closed"""
        
-def generage_insights():
+def generate_insights():
     insights = []
-    insight1 = {}
-    insight2 = {}
-    insight3 = {}
-        
-    insight1["Title"] = ["10 of your tests failed on a similar error"]
+    
+    insight1 = {"Title": "10 tests failed on a similar error", "TestCases": {}}
+    insight2 = {"Title": "3 tests failed only on your environment", "TestCases": {}}
+    insight3 = {"Title": "4 tests failed on other environments also", "TestCases": {}}
+    
     num = 0
-    for failed_test in failed_tests.iterrows():
-        insight1["test_cases"][++num] = failed_test
-        num = num+1
-        if num == 3:
-            continue
-    insights.append(insight1)
-
-    insight2["Title"] = ["3 of your tests failed only on your environment"]
+    for _, failed_test in failed_tests.iterrows():
+        insight1["TestCases"][num] = failed_test.to_dict()
+        num += 1
+        if num >= 9:
+            break
+    
     num = 2
-    for failed_test in failed_tests.iterrows():
-        insight2["test_cases"][num] = failed_test
-        num = num+1
-        if num == 5:
-            continue
-    insights.append(insight2)
-
-    insight3["Title"] = ["4 of your tests failed on other environments also"]
+    for _, failed_test in failed_tests.iterrows():
+        insight2["TestCases"][num] = failed_test.to_dict()
+        num += 1
+        if num >= 5:
+            break
+    
     num = 3
-    for failed_test in failed_tests.iterrows():
-        insight3["test_cases"][num] = failed_test
-        num = num+1
-        if num == 7:
-            continue
+    for _, failed_test in failed_tests.iterrows():
+        insight3["TestCases"][num] = failed_test.to_dict()
+        num += 1
+        if num >= 7:
+            break
+    
+    insights.append(insight1)
+    insights.append(insight2)
     insights.append(insight3)
+    
     return insights
 
 
@@ -105,29 +92,38 @@ failed_tests['failure_status'] = np.random.choice(['New Fail', 'Repeated Fail', 
 fig2 = px.pie(failed_tests.failure_status.value_counts().reset_index(), values='count', names='failure_status', title='Failure breakdown')
 chart_columns[1].plotly_chart(fig2,use_container_width=True)
 st.header("Failed Tests Analysis")
-#render_insights
 
-col1, col2 = st.expander("10 of your tests failed on a similar error").columns([3,3])
-col1.header("Test list")
-col1.write("Add to Cart and Modify Quantity")
-col1.write("Verify Homepage Load Speed")
-col2.header("Log")
-col2.write(error)
+#render_insights()
+insights = generate_insights()
+for insight in insights:
+    col1, col2 ,col3= st.expander(insight["Title"]).columns([3,3,3])
+    col1.header("Test list")
+    col2.header("Environment")
+    col3.header("Error")
+    for test in insight["TestCases"].values():
+        col1.write(test["CaseName"])
+        col2.write(test["Environment"])
+        col3.write(Exception(error))
+        
+    
+    # #col1.write("Verify Homepage Load Speed")
+    # col2.header(insight[""])
+    # col2.write(Exception(error))
 
-col1, col2 = st.expander("3 of your tests failed only on your environment").columns([3,3])
-col1.header("Test list")
-col1.write("Add to Cart and Modify Quantity")
-col1.write("Verify Homepage Load Speed")
-col2.header("Log")
-col2.write(error)
+    # col1, col2 = st.expander("3 tests failed only on your environment").columns([3,3])
+    # col1.header("Test list")
+    # col1.write("Add to Cart and Modify Quantity")
+    # col1.write("Verify Homepage Load Speed")
+    # col2.header("Log")
+    # col2.write(error)
 
-col1, col2 = st.expander("4 of your tests failed on other environments also").columns([3,3])
-col1.header("Test list")
-col1.write("Add to Cart and Modify Quantity")
-col1.write("Verify Homepage Load Speed")
-col2.header("Environment")
-col2.write("Production")
-col2.write("Production")
+    # col1, col2 = st.expander("4 tests failed on other environments also").columns([3,3])
+    # col1.header("Test list")
+    # col1.write("Add to Cart and Modify Quantity")
+    # col1.write("Verify Homepage Load Speed")
+    # col2.header("Environment")
+    # col2.write("Production")
+    # col2.write("Production")
 
 
 # insights = generage_insights
