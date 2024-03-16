@@ -15,11 +15,14 @@ class TestCase:
         self.expected_outcome = expected_result
 
     def persist(self):
-        if self.case_id > 0:
-            DAL.update_case(self)
+        # Assuming DAL methods are properly handling insert/update based on case_id
+        if isinstance(self.case_id, str) and not self.case_id.isdigit():
+            # New case with UUID case_id
+            self.case_id = DAL.insert_case(self)
         else:
-            self.case_id = None
-            DAL.insert_case(self)
+            # Existing case with numeric case_id
+            DAL.update_case(self)
+
 
     def render(self,widget):
         expander = widget.expander(self.title)
@@ -46,10 +49,14 @@ class TestCase:
                     st.write(f"**Expected Result:** {self.expected_outcome}")
                 
         return expander
-    
-class TestCode():self.case_id = id if id is not None else str(uuid.uuid4())
+
+class TestCode:
     def __init__(self, code):
         self.code = code
+    
+# class TestCode():self.case_id = id if id is not None else str(uuid.uuid4())
+#     def __init__(self, code):
+#         self.code = code
 
 class TestRun():
     def __init__(self, run_id, suite_id, run_title, status = None, started_at = None, completed_at =None):
