@@ -2,10 +2,12 @@ import random
 import streamlit as st
 import DAL
 import json
+import uuid
+
 
 class TestCase:
     def __init__(self, id, title, description, precondition, steps, expected_result):
-        self.case_id = id if id else random.randint(-10000,-1)
+        self.case_id = id if id is not None else str(uuid.uuid4())
         self.title = title
         self.precondition = precondition
         self.description = description
@@ -45,7 +47,7 @@ class TestCase:
                 
         return expander
     
-class TestCode():
+class TestCode():self.case_id = id if id is not None else str(uuid.uuid4())
     def __init__(self, code):
         self.code = code
 

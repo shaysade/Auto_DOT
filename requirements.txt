@@ -9,3 +9,4 @@ beautifulsoup4
 streamlit-supabase-auth
 streamlit_antd_components
 plotly
+uuid
